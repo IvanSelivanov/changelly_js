@@ -43,12 +43,27 @@ module.exports = (function() {
       'reconnectionAttempts': 'Infinity'
     });
 
+    this._socket.on('close', function () {
+      console.log('close')
+    })
+
+    console.log(this._socket)
+
+    this._socket.on('disconnect', function () {
+      console.log('disconnect')
+    })
+
+    this._socket.on('error', function () {
+      console.log('disconnect')
+    })
+
     this._socket.on('connect', function() {
       var message = {
         "Login": {}
       };
-      
-      self._socket.emit('subscribe', 
+
+      console.log('connecting')
+      self._socket.emit('subscribe',
         {
           apiKey: apiKey,
           sign: self._sign(message),
