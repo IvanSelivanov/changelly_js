@@ -2,6 +2,8 @@
 
 npm i
 
+затем 
+
 node index.js
 
 или
