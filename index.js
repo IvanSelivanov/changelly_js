@@ -1,14 +1,33 @@
-var Changelly = require('./lib.js');
+require('dotenv').load()
+const Changelly = require('./changelly.js')
+const URL = require('url-parse')
+const Redis = require('redis')
+
+const url = new URL(process.env.REDIS_URL)
+const redis_client = Redis.createClient(url.port, url.hostname)
+
+redis_client.rpush(['frameworks1', JSON.stringify({
+  'javascript': 'AngularJS',
+  'css': 'Bootstrap',
+  'node': 'Express'
+})]);
+
+redis_client.rpush(['frameworks1', JSON.stringify({
+  'javascript1': 'AngularJS',
+  'css1': 'Bootstrap',
+  'node1': 'Express'
+})]);
+
+redis_client.on("error", function (err) {
+  console.log("Error: " + err);
+})
 
 var changelly = new Changelly(
-  '0a970c7046e44ade9f4d09dc037dfc8c',
-  '8da34f4b2a9bcccceed1416c670aa4da509c8bc2686e06a9aea017cee3cc5fae'
-);
-
-changelly.on('payin', function(data) {
-  console.log('payin', data);
-});
+  process.env.CHANGELLY_API_KEY,
+  process.env.CHANGELLY_SECRET
+)
 
 changelly.on('status', function(data) {
-  console.log('status', data);
-});
+  redis_client.rpush(['transaction_statuses', JSON.stringify(data)])
+})
+
